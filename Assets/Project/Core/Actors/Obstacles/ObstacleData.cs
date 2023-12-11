@@ -1,19 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 
-public class ObstacleData
+[System.Serializable]
+public struct ObstacleData
 {
-    private float speed;
-    private float movementRange;
+    public float speed;
+    public float movementRange;
+    public float yPositionOffset;
+    public Range delayRange;
 
-    public ObstacleData(float speed, float movementRange)
+    public ObstacleData(float speed, float movementRange, float yPositionOffset, Range delayRange)
     {
         this.speed = speed;
         this.movementRange = movementRange;
+        this.yPositionOffset = yPositionOffset;
+        this.delayRange = delayRange;
     }
-
-    public float Speed { get => speed; private set { } }
-
-    public float MovementRange { get => movementRange; private set { } }
 }

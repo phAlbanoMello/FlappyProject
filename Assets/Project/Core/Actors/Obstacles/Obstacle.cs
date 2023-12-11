@@ -1,13 +1,9 @@
-using FlappyProject.Interfaces;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    [SerializeField] private ObstacleData obstacleData;
-
+    private ObstacleData obstacleData;
     private Action move;
     protected bool isActivated;
     protected Vector2 startPosition;
@@ -16,6 +12,7 @@ public class Obstacle : MonoBehaviour
 
     public virtual void Init(ObstacleData data) {
         obstacleData = data;
+        startPosition = transform.position;
     }
 
     public void Activate()
@@ -32,7 +29,6 @@ public class Obstacle : MonoBehaviour
         if (move != null)
         {
             Activate();
-            startPosition = transform.position;
             move.Invoke();
         }
     }
@@ -44,5 +40,16 @@ public class Obstacle : MonoBehaviour
     protected void SetMovementCallback(Action moveAction)
     {
         move = moveAction;
+    }
+    protected Vector3 GetNewStartPosition()
+    {
+        float spawnLimit = transform.localScale.y / 2;
+        float yPosOffset = UnityEngine.Random.Range(-spawnLimit, spawnLimit) * ObstacleData.yPositionOffset;
+        Debug.Log(yPosOffset);
+        return new Vector3(startPosition.x, startPosition.y + yPosOffset, 0);
+    }
+    protected float GetNewDelay()
+    {
+        return UnityEngine.Random.Range(ObstacleData.delayRange.min, ObstacleData.delayRange.max);
     }
 }

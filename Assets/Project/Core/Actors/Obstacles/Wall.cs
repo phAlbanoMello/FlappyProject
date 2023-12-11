@@ -17,7 +17,7 @@ public class Wall : Obstacle
 
     private void OnMoveActionCalled()
     {
-        BasicMovement(this, Vector3.left, ObstacleData.Speed, ObstacleData.MovementRange);
+        StartCoroutine(MoveDelayed());
     }
 
     private void BasicMovement(Obstacle obstacle, Vector3 moveDirection, float speed, float distance)
@@ -27,16 +27,17 @@ public class Wall : Obstacle
         LeanTween.move(gameObject, transform.position + moveDirection * distance, timeToReachDestination)
             .setEase(LeanTweenType.linear)
             .setOnComplete(() => {
+                transform.position = GetNewStartPosition();
                 if (isActivated)
                 {
-                    transform.position = startPosition;
                     OnMoveActionCalled();
                 }
-                else
-                {
-                    transform.position = startPosition;
-                }
-                Debug.Log("Finished Moving");
             });
+    }
+
+    private IEnumerator MoveDelayed()
+    {
+        yield return new WaitForSeconds(GetNewDelay());
+        BasicMovement(this, Vector3.left, ObstacleData.speed, ObstacleData.movementRange);
     }
 }
