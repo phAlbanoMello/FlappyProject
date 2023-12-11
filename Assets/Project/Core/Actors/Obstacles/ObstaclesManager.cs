@@ -6,9 +6,20 @@ using UnityEngine;
 namespace FlappyProject.Managers
 {
     public class ObstaclesManager : MonoBehaviour, IManager
-    {
+    {        
+        [SerializeField] private List<ObstacleSpawner> spawns = new List<ObstacleSpawner>();
+
         public void Init()
         {
+            StartSpawningRoutines();
+        }
+
+        private void StartSpawningRoutines()
+        {
+            foreach (var spawner in spawns)
+            {
+                spawner.StartSpawning();
+            }
         }
 
         public void Stop()
@@ -18,5 +29,7 @@ namespace FlappyProject.Managers
         public void UpdateManager(float deltaTime)
         {
         }
+
+ 
     }
 }
