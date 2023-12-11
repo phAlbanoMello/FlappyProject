@@ -1,18 +1,55 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    private ObstacleData obstacleData;
+    private Action move;
+    protected bool isActivated;
+    protected Vector2 startPosition;
+
+    public ObstacleData ObstacleData { get => obstacleData; private set { } }
+
+    public virtual void Init(ObstacleData data) {
+        obstacleData = data;
+        startPosition = transform.position;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Activate()
     {
-        
+        isActivated = true;
+    }
+    public void Deactivate()
+    {
+        isActivated = false;
+    }
+
+    public virtual void Move()
+    {
+        if (move != null)
+        {
+            Activate();
+            move.Invoke();
+        }
+    }
+    public virtual void Destroy()
+    {
+        Destroy(gameObject);
+    }
+
+    protected void SetMovementCallback(Action moveAction)
+    {
+        move = moveAction;
+    }
+    protected Vector3 GetNewStartPosition()
+    {
+        float spawnLimit = transform.localScale.y / 2;
+        float yPosOffset = UnityEngine.Random.Range(-spawnLimit, spawnLimit) * ObstacleData.yPositionOffset;
+        Debug.Log(yPosOffset);
+        return new Vector3(startPosition.x, startPosition.y + yPosOffset, 0);
+    }
+    protected float GetNewDelay()
+    {
+        return UnityEngine.Random.Range(ObstacleData.delayRange.min, ObstacleData.delayRange.max);
     }
 }
