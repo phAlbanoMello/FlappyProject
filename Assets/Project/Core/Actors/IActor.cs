@@ -9,7 +9,7 @@ namespace FlappyProject.Interfaces
     {
         public void Initialize();
         public void Destroy();
-        public void Update(float deltaTime);
+        public void UpdateActor(float deltaTime);
         public void EnableActions();
         public void DisableActions();
     }

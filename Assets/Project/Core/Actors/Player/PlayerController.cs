@@ -1,8 +1,8 @@
 using FlappyProject.Interfaces;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace FlappyProject.Actions
 {
@@ -14,7 +14,6 @@ namespace FlappyProject.Actions
         private Rigidbody2D _targetRigidbody;
 
         private InputAction jump;
-
         public PlayerController(InputAction jumpAction, GameObject gameObject, MovementData movementData)
         {
             jump = jumpAction;
@@ -44,6 +43,7 @@ namespace FlappyProject.Actions
 
         private void Jump(float jumpForce)
         {
+            Debug.Log("Jumped");
             if (_targetRigidbody != null)
             {
                 _targetRigidbody.velocity = Vector2.zero;
@@ -51,8 +51,7 @@ namespace FlappyProject.Actions
             }
 
         }
-
-        public void Update(float deltaTime)
+        public void UpdateActor(float deltaTime)
         {
             HandleRotation(deltaTime);
         }

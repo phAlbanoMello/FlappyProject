@@ -15,11 +15,11 @@ namespace FlappyProject.Managers
         [SerializeField] private float jumpForce;
         [SerializeField] private float rotationAngle;
         [SerializeField] private float rotationSpeed;
-        
+  
         [SerializeField] private InputAction jump;
-        
+
         private IActor _playerController;
-        
+
         public void Init()
         {
             MovementData movementData = new MovementData(
@@ -37,7 +37,7 @@ namespace FlappyProject.Managers
 
         public void UpdateManager(float deltaTime)
         {
-            _playerController.Update(deltaTime);
+            _playerController.UpdateActor(deltaTime);
         }
     }
 }
