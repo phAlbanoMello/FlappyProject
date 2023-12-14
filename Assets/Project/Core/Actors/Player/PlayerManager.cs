@@ -1,31 +1,30 @@
 using FlappyProject.Actions;
 using FlappyProject.Interfaces;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace FlappyProject.Managers
 {
+    [System.Serializable]
     public class PlayerManager : MonoBehaviour, IManager
     {
-        [SerializeField] private GameObject playerGameObject;
-
-        [SerializeField] private float slowTapSpeedMultiplier;
-        [SerializeField] private float jumpForce;
-        [SerializeField] private float rotationAngle;
-        [SerializeField] private float rotationSpeed;
-  
-        [SerializeField] private InputAction jump;
+        [SerializeField] private PlayerSettings _playerData;
 
         private IActor _playerController;
+        private Action<LayerMask> _playerDied;
+        public Action<LayerMask> PlayerDiedEvent { get => _playerDied; private set { } }
 
         public void Init()
         {
-            MovementData movementData = new MovementData(
-                slowTapSpeedMultiplier, jumpForce, rotationAngle, rotationSpeed
-            );
-
-            _playerController = new PlayerController(jump, playerGameObject, movementData);
+            _playerController = new PlayerController(_playerData);
             _playerController.Initialize();
+        }
+
+        public void SubscribeToPlayerCollisionEvent(Action<LayerMask> callback)
+        {
+            CollisionDetection collisionDetection = _playerData.PlayerGameObject.GetComponent<CollisionDetection>();
+            collisionDetection.OnCollisionDetected += callback;
         }
 
         public void Stop()

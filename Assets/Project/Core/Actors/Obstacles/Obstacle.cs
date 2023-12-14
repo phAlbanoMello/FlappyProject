@@ -45,7 +45,6 @@ public class Obstacle : MonoBehaviour
     {
         float spawnLimit = transform.localScale.y / 2;
         float yPosOffset = UnityEngine.Random.Range(-spawnLimit, spawnLimit) * ObstacleData.yPositionOffset;
-        Debug.Log(yPosOffset);
         return new Vector3(startPosition.x, startPosition.y + yPosOffset, 0);
     }
     protected float GetNewDelay()

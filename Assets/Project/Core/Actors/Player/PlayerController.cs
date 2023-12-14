@@ -1,4 +1,5 @@
 using FlappyProject.Interfaces;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,48 +9,60 @@ namespace FlappyProject.Actions
 {
     public class PlayerController : IActor
     {
-        private MovementData _movementData;
 
-        private GameObject _gameObject;
+        //TODO: Handle losing lives 
+        private PlayerSettings _settings;
+
+        private CollisionDetection _playerCollision;
         private Rigidbody2D _targetRigidbody;
+        private Action _playerDiedEvent;
 
-        private InputAction jump;
-        public PlayerController(InputAction jumpAction, GameObject gameObject, MovementData movementData)
+        public PlayerController(PlayerSettings data)
         {
-            jump = jumpAction;
-            _gameObject = gameObject;
-            _movementData = movementData;
+            _settings = data;
         }
 
         public void Initialize()
         {
+            if (_settings.PlayerGameObject == null) { Debug.LogError("Target Actor was not set at the PlayerManager.");  return;}
+
+            _targetRigidbody = _settings.PlayerGameObject.GetComponent<Rigidbody2D>();
+            
+            SetupCollision();
             EnableActions();
+            SetupJumpInputAction();
+        }
 
-            if (_targetRigidbody == null)
+        private void SetupJumpInputAction()
+        {
+            MovementData moveData = _settings.MovementData;
+       
+            _settings.Jump.performed += context =>
             {
-                _targetRigidbody = _gameObject.GetComponent<Rigidbody2D>();
-            }
-
-            jump.performed += context =>
-            {
+                float jumpForce = moveData.JumpForce;
                 if (context.interaction is SlowTapInteraction)
                 {
-                    Jump(_movementData.JumpForce * _movementData.Speed);
+                    jumpForce = moveData.JumpForce * moveData.Speed;
+                    Jump(jumpForce);
                     return;
                 }
-                Jump(_movementData.JumpForce);
+                Jump(jumpForce);
             };
+        }
+
+        private void SetupCollision()
+        {
+            _playerCollision = _settings.PlayerGameObject.GetComponent<CollisionDetection>();
+            _playerCollision.OnCollisionDetected += HandleCollision;
         }
 
         private void Jump(float jumpForce)
         {
-            Debug.Log("Jumped");
             if (_targetRigidbody != null)
             {
                 _targetRigidbody.velocity = Vector2.zero;
                 _targetRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
-
         }
         public void UpdateActor(float deltaTime)
         {
@@ -60,18 +73,32 @@ namespace FlappyProject.Actions
         {
             if (_targetRigidbody != null)
             {
-                float tiltAngle = Mathf.Clamp(_targetRigidbody.velocity.y * _movementData.RotationSpeed, -_movementData.RotationAngle, _movementData.RotationAngle);
-                _gameObject.transform.eulerAngles = new Vector3(0, 0, tiltAngle);
+                float tiltAngle = Mathf.Clamp(
+                    _targetRigidbody.velocity.y * _settings.MovementData.RotationSpeed, 
+                    -_settings.MovementData.RotationAngle,
+                    _settings.MovementData.RotationAngle
+                );
+
+                _settings.PlayerGameObject.transform.eulerAngles = new Vector3(0, 0, tiltAngle);
+            }
+        }
+        
+        private void HandleCollision(LayerMask layerMask)
+        {
+            if (layerMask == _settings.HazardLayer)
+            {
+                DisableActions();
+                Debug.Log("Player died");
             }
         }
 
         public void EnableActions()
         {
-            jump.Enable();
+            _settings.Jump.Enable();
         }
         public void DisableActions()
         {
-            jump.Disable();
+            _settings.Jump.Disable();
         }
         public void Destroy()
         {

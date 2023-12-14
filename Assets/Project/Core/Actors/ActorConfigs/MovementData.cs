@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class MovementData
 {
-    private float _speed;
-    private float _jumpForce;
-    private float _rotationAngle;
-    private float _rotationSpeed;
+    [SerializeField] private float _speed;
+    [SerializeField] private float _jumpForce;
+    [SerializeField] private float _rotationAngle;
+    [SerializeField] private float _rotationSpeed;
 
     public float Speed { get => _speed; private set { } }
     public float JumpForce { get => _jumpForce; private set { } }
