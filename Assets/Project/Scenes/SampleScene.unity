@@ -383,8 +383,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a15a6dccd92fc4cb41a3a5b219b693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scorePerSecond: 5
-  scorePenalty: 0
+  _scorePerSecond: 5
+  _scorePenalty: 25
 --- !u!114 &358841365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1014,10 +1014,10 @@ MonoBehaviour:
         m_Flags: 0
       m_Flags: 0
     _movementData:
-      _speed: 10
+      _speed: 5
       _jumpForce: 5
       _rotationAngle: 5
-      _rotationSpeed: 15
+      _rotationSpeed: 10
 --- !u!1 &1252475841
 GameObject:
   m_ObjectHideFlags: 0

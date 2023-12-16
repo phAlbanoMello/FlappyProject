@@ -1,16 +1,12 @@
 using FlappyProject.Interfaces;
 using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
 
 namespace FlappyProject.Actions
 {
     public class PlayerController : IActor
     {
-
-        //TODO: Handle losing lives 
         private PlayerSettings _settings;
 
         private CollisionDetection _playerCollision;
@@ -26,9 +22,9 @@ namespace FlappyProject.Actions
         {
             if (_settings.PlayerGameObject == null) { Debug.LogError("Target Actor was not set at the PlayerManager.");  return;}
 
+            EventBus.Subscribe<PlayerDiedEvent>(HandleDeath);
             _targetRigidbody = _settings.PlayerGameObject.GetComponent<Rigidbody2D>();
             
-            SetupCollision();
             EnableActions();
             SetupJumpInputAction();
         }
@@ -48,12 +44,6 @@ namespace FlappyProject.Actions
                 }
                 Jump(jumpForce);
             };
-        }
-
-        private void SetupCollision()
-        {
-            _playerCollision = _settings.PlayerGameObject.GetComponent<CollisionDetection>();
-            _playerCollision.OnCollisionDetected += HandleCollision;
         }
 
         private void Jump(float jumpForce)
@@ -83,13 +73,11 @@ namespace FlappyProject.Actions
             }
         }
         
-        private void HandleCollision(LayerMask layerMask)
+        private void HandleDeath(PlayerDiedEvent playerDiedEvent)
         {
-            if (layerMask == _settings.HazardLayer)
-            {
-                DisableActions();
-                Debug.Log("Player died");
-            }
+            DisableActions();
+            Debug.Log("Player died");
+            EventBus.Unsubscribe<PlayerDiedEvent>(HandleDeath);
         }
 
         public void EnableActions()
@@ -102,7 +90,8 @@ namespace FlappyProject.Actions
         }
         public void Destroy()
         {
-            throw new System.NotImplementedException();
+           
         }
+        
     }
 }

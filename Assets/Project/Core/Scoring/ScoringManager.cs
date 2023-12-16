@@ -1,73 +1,61 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using FlappyProject.Interfaces;
-using System;
-using UnityEngine.SocialPlatforms.Impl;
+using System.Collections;
+using UnityEngine;
 
 namespace FlappyProject.Managers
 {
     public class ScoringManager : MonoBehaviour, IManager
     {
-        private ScoreData scoreData;
-        [SerializeField] private int scorePerSecond;
-        [SerializeField] private int scorePenalty;
+        [SerializeField] private int _scorePerSecond;
+        [SerializeField] private int _scorePenalty;
 
+        private ScoreData _scoreData;
         private TempUpdateScore _tempUpdateScore;
-
         private Coroutine _scoring;
         private bool _scoringRunning;
 
         public void Init()
         {
+            EventBus.Subscribe<PlayerCollidedEvent>(HandlePlayerDamaged);
+
             _tempUpdateScore = GetComponent<TempUpdateScore>();
-            scoreData = new ScoreData();
+            _scoreData = new ScoreData();
             _scoringRunning = true;
             _scoring = StartCoroutine(StartScoring());
-            UpdatePreviousScoreText();
         }
 
-        public void SetPlayerDiedCallback(Action<LayerMask> callback)
+        private void HandlePlayerDamaged(PlayerCollidedEvent playerCollidedEvent)
         {
-            callback += HandlePlayerDamaged;
-        }
-
-        public Action<LayerMask> GetPlayerDamagedHandler(){
-            return HandlePlayerDamaged;
-        }
-
-        private void HandlePlayerDamaged(LayerMask layer)
-        {
-            int resultScore = scoreData.CurrentScore - scorePenalty;
+            int resultScore = _scoreData.CurrentScore - _scorePenalty;
             if (resultScore > 0)
             {
-                RemoveScore(scorePenalty);
+                RemoveScore(_scorePenalty);
             }
-            else
+            else if (_scoringRunning)
             {
                 _scoringRunning = false;
                 Stop();
                 SaveScore();
-                UpdatePreviousScoreText();
                 ResetScore();
+                EventBus.Publish(new PlayerDiedEvent());
                 Debug.Log("Player Died");
             }
-
         }
 
         private void UpdatePreviousScoreText()
         {
-            _tempUpdateScore.SetPreviousScoreText($"Previous Score : {scoreData.PreviousScore}");
+            _tempUpdateScore.SetPreviousScoreText($"Previous Score : {_scoreData.PreviousScore}");
         }
 
         private void LoadLastScore(ScoreData scoreData)
         {
-            this.scoreData = scoreData;
+            this._scoreData = scoreData;
         }
 
         public void Stop()
         {
             StopCoroutine(_scoring);
+            EventBus.Unsubscribe<PlayerCollidedEvent>(HandlePlayerDamaged);
         }
 
         public void UpdateManager(float deltaTime)
@@ -76,43 +64,47 @@ namespace FlappyProject.Managers
 
         public int GetCurrentScore()
         {
-            return scoreData.CurrentScore;
+            return _scoreData.CurrentScore;
         }
         public void SetScore(int score)
         {
-            scoreData.CurrentScore = score;
+            _scoreData.CurrentScore = score;
         }
         public void AddScore(int scoreToAdd)
         {
-            scoreData.CurrentScore += scoreToAdd;
-            _tempUpdateScore.SetScoreText($"Score : {scoreData.CurrentScore}");
+            _scoreData.CurrentScore += scoreToAdd;
+            UpdateScoreText();
         }
+
+        private void UpdateScoreText()
+        {
+            _tempUpdateScore.SetScoreText($"Score : {_scoreData.CurrentScore}");
+        }
+
         public void RemoveScore(int scoreToRemove)
         {
-            scoreData.CurrentScore -= scoreToRemove;
+            _scoreData.CurrentScore -= scoreToRemove;
+            UpdateScoreText();
         }
 
         public void ResetScore()
         {
-            scoreData.CurrentScore = 0;
+            _scoreData.CurrentScore = 0;
+            UpdateScoreText();
         }
         public void SaveScore()
         {
-            scoreData.PreviousScore = scoreData.CurrentScore;
+            _scoreData.PreviousScore = _scoreData.CurrentScore;
+            UpdatePreviousScoreText();
         }
 
         private IEnumerator StartScoring()
         {
             while (_scoringRunning)
             {
-                AddScore(scorePerSecond);
+                AddScore(_scorePerSecond);
                 yield return new WaitForSeconds(1);
             }
-        }
-
-        void OnGUI()
-        {
-            GUI.Label(new Rect(10, 10, Screen.width, Screen.height), "Score: " + scoreData.CurrentScore);
         }
     }
 }

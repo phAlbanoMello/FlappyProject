@@ -6,28 +6,22 @@ using System.Collections.Generic;
 [System.Serializable]
 public class SystemManager : MonoBehaviour
 { 
-    private PlayerManager playerManager;
-    private ObstaclesManager obstacleManager;
-    private ScoringManager scoringManager;
+    private PlayerManager _playerManager;
 
-    private List<IManager> managers = new List<IManager>();
+    private readonly List<IManager> _managers = new List<IManager>();
 
     void OnEnable()
     {
         LoadManagersFromChildren();
 
-        playerManager = GetManagerOfType<PlayerManager>();
-        obstacleManager = GetManagerOfType<ObstaclesManager>();
-        scoringManager = GetManagerOfType<ScoringManager>();
-
-        playerManager.SubscribeToPlayerCollisionEvent(scoringManager.GetPlayerDamagedHandler());
+        _playerManager = GetManagerOfType<PlayerManager>();
         
         InitializeManagers();
     }
 
     private void InitializeManagers()
     {
-        foreach (var manager in managers)
+        foreach (var manager in _managers)
         {
             manager.Init();
         }
@@ -41,21 +35,18 @@ public class SystemManager : MonoBehaviour
             IManager manager = child.GetComponent<IManager>();
             if (manager != null)
             {
-                managers.Add(manager);
+                _managers.Add(manager);
             }
         }
     }
 
     T GetManagerOfType<T>() where T : class, IManager
     {
-        return managers.Find(obj => obj.GetType() == typeof(T)) as T;
+        return _managers.Find(obj => obj.GetType() == typeof(T)) as T;
     }
 
     void Update()
     {
-        playerManager.UpdateManager(Time.deltaTime);
-    }
-
-    void OnDisable() { 
-    }    
+        _playerManager.UpdateManager(Time.deltaTime);
+    }  
 }

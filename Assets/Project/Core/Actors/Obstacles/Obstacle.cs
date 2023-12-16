@@ -3,35 +3,38 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    private ObstacleData obstacleData;
-    private Action move;
-    protected bool isActivated;
-    protected Vector2 startPosition;
+    protected bool IsActivated;
+    protected Vector2 StartPosition;
 
-    public ObstacleData ObstacleData { get => obstacleData; private set { } }
+    private Action _move;
 
-    public virtual void Init(ObstacleData data) {
-        obstacleData = data;
-        startPosition = transform.position;
+    public ObstacleData ObstacleData { get; private set; }
+
+    public virtual void Init(ObstacleData data)
+    {
+        ObstacleData = data;
+        StartPosition = transform.position;
     }
 
     public void Activate()
     {
-        isActivated = true;
+        IsActivated = true;
     }
+
     public void Deactivate()
     {
-        isActivated = false;
+        IsActivated = false;
     }
 
     public virtual void Move()
     {
-        if (move != null)
+        if (_move != null)
         {
             Activate();
-            move.Invoke();
+            _move.Invoke();
         }
     }
+
     public virtual void Destroy()
     {
         Destroy(gameObject);
@@ -39,16 +42,18 @@ public class Obstacle : MonoBehaviour
 
     protected void SetMovementCallback(Action moveAction)
     {
-        move = moveAction;
+        _move = moveAction;
     }
+
     protected Vector3 GetNewStartPosition()
     {
         float spawnLimit = transform.localScale.y / 2;
-        float yPosOffset = UnityEngine.Random.Range(-spawnLimit, spawnLimit) * ObstacleData.yPositionOffset;
-        return new Vector3(startPosition.x, startPosition.y + yPosOffset, 0);
+        float yPosOffset = UnityEngine.Random.Range(-spawnLimit, spawnLimit) * ObstacleData.YPositionOffset;
+        return new Vector3(StartPosition.x, StartPosition.y + yPosOffset, 0);
     }
+
     protected float GetNewDelay()
     {
-        return UnityEngine.Random.Range(ObstacleData.delayRange.min, ObstacleData.delayRange.max);
+        return UnityEngine.Random.Range(ObstacleData.DelayRange.Min, ObstacleData.DelayRange.Max);
     }
 }

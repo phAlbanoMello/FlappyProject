@@ -1,5 +1,4 @@
 using FlappyProject.Interfaces;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +6,7 @@ namespace FlappyProject.Managers
 {
     public class ObstaclesManager : MonoBehaviour, IManager
     {        
-        [SerializeField] private List<ObstacleSpawner> spawns = new List<ObstacleSpawner>();
+        [SerializeField] private List<ObstacleSpawner> _spawns = new List<ObstacleSpawner>();
 
         public void Init()
         {
@@ -16,7 +15,7 @@ namespace FlappyProject.Managers
 
         private void StartSpawningRoutines()
         {
-            foreach (var spawner in spawns)
+            foreach (var spawner in _spawns)
             {
                 spawner.StartSpawning();
             }
