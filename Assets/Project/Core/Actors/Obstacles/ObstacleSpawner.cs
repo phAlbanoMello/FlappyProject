@@ -4,10 +4,10 @@ using UnityEngine;
 public class ObstacleSpawner : MonoBehaviour, ISpawner
 {
     //TODO: SpawingData must be configurable on a separate data class
-    [SerializeField] private GameObject obstacleToSpawn;
-    [SerializeField] private ObstacleData initialObstacleData;
+    [SerializeField] private GameObject _obstacleToSpawn;
+    [SerializeField] private ObstacleData _initialObstacleData;
 
-    [SerializeField] private readonly List<Obstacle> spawnedObstacles = new List<Obstacle>();
+    [SerializeField] private readonly List<Obstacle> _spawnedObstacles = new List<Obstacle>();
     
     public void StartSpawning()
     {
@@ -16,23 +16,23 @@ public class ObstacleSpawner : MonoBehaviour, ISpawner
 
     public void StopSpawning()
     {
-        foreach (var obstacle in spawnedObstacles)
+        foreach (var obstacle in _spawnedObstacles)
         {
             obstacle.Destroy();
         }
-        spawnedObstacles.Clear();
+        _spawnedObstacles.Clear();
     }
 
     private void CreateObstacle()
     {
-        GameObject obstacle = Instantiate(obstacleToSpawn, transform);
+        GameObject obstacle = Instantiate(_obstacleToSpawn, transform);
         Obstacle obstacleComponent = obstacle.GetComponent<Obstacle>();
 
         if (obstacleComponent != null)
         {
-            obstacleComponent.Init(initialObstacleData);
+            obstacleComponent.Init(_initialObstacleData);
             obstacleComponent.Move();
-            spawnedObstacles.Add(obstacleComponent);
+            _spawnedObstacles.Add(obstacleComponent);
         }
     }
 }

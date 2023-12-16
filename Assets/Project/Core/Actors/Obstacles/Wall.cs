@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Wall : Obstacle
@@ -20,6 +19,12 @@ public class Wall : Obstacle
         StartCoroutine(MoveDelayed());
     }
 
+    private IEnumerator MoveDelayed()
+    {
+        yield return new WaitForSeconds(GetNewDelay());
+        BasicMovement(this, Vector3.left, ObstacleData.Speed, ObstacleData.MovementRange);
+    }
+
     private void BasicMovement(Obstacle obstacle, Vector3 moveDirection, float speed, float distance)
     {
         float timeToReachDestination = distance / speed;
@@ -28,16 +33,10 @@ public class Wall : Obstacle
             .setEase(LeanTweenType.linear)
             .setOnComplete(() => {
                 transform.position = GetNewStartPosition();
-                if (isActivated)
+                if (IsActivated)
                 {
                     OnMoveActionCalled();
                 }
             });
-    }
-
-    private IEnumerator MoveDelayed()
-    {
-        yield return new WaitForSeconds(GetNewDelay());
-        BasicMovement(this, Vector3.left, ObstacleData.speed, ObstacleData.movementRange);
     }
 }
