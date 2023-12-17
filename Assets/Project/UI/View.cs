@@ -4,15 +4,7 @@ using UnityEngine;
 
 public class View : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private bool _isEnabledAtStart;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public bool IsEnabledAtStart { get => _isEnabledAtStart; }
 }

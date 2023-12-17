@@ -23,7 +23,10 @@ public class SystemManager : MonoBehaviour
     {
         foreach (var manager in _managers)
         {
-            manager.Init();
+            if (manager.ShouldInitializeAtStart)
+            {
+                manager.Init();
+            }
         }
     }
 
@@ -47,6 +50,9 @@ public class SystemManager : MonoBehaviour
 
     void Update()
     {
-        _playerManager.UpdateManager(Time.deltaTime);
+        if (_playerManager.HasInitiated)
+        {
+            _playerManager.UpdateManager(Time.deltaTime);
+        }
     }  
 }

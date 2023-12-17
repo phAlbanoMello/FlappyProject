@@ -8,6 +8,9 @@ namespace FlappyProject.Managers
     {
         [SerializeField] private int _scorePerSecond;
         [SerializeField] private int _scorePenalty;
+        [SerializeField] private bool _autoStart;
+        public bool ShouldInitializeAtStart { get { return _autoStart; } }
+        public bool HasInitiated { get; private set; }
 
         private ScoreData _scoreData;
         private TempUpdateScore _tempUpdateScore;

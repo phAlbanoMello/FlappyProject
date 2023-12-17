@@ -1,5 +1,6 @@
 using FlappyProject.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace FlappyProject.Managers
@@ -8,9 +9,22 @@ namespace FlappyProject.Managers
     {        
         [SerializeField] private List<ObstacleSpawner> _spawns = new List<ObstacleSpawner>();
 
+        [SerializeField] private bool _autoStart;
+        public bool ShouldInitializeAtStart { get { return _autoStart; } }
+
+        public bool HasInitiated { get; private set; }
+
         public void Init()
         {
+            LoadSpawners();
             StartSpawningRoutines();
+            HasInitiated = true;
+        }
+
+        private void LoadSpawners()
+        {
+            ObstacleSpawner[] obstacleSpawners = GetComponentsInChildren<ObstacleSpawner>();
+            _spawns = obstacleSpawners.ToList<ObstacleSpawner>();
         }
 
         private void StartSpawningRoutines()

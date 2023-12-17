@@ -13,6 +13,8 @@ namespace FlappyProject.Actions
         private Rigidbody2D _targetRigidbody;
         private Action _playerDiedEvent;
 
+        private bool gameStarted = false;
+
         public PlayerController(PlayerSettings data)
         {
             _settings = data;
@@ -20,13 +22,30 @@ namespace FlappyProject.Actions
 
         public void Initialize()
         {
-            if (_settings.PlayerGameObject == null) { Debug.LogError("Target Actor was not set at the PlayerManager.");  return;}
+            if (_settings.PlayerGameObject == null) { Debug.LogError("Target Actor was not set at the PlayerManager."); return; }
 
             EventBus.Subscribe<PlayerDiedEvent>(HandleDeath);
             _targetRigidbody = _settings.PlayerGameObject.GetComponent<Rigidbody2D>();
-            
+
+            MoveObjectToPosition(
+                _settings.PlayerGameObject,
+                Vector2.zero, 2f,
+                EnableMovement
+            );
+        }
+
+        private void EnableMovement()
+        {
+            //TODO:Countdown before starting
+            //Synchronize with obstacles
             EnableActions();
             SetupJumpInputAction();
+        }
+
+        private void EnablePhysics()
+        {
+            _targetRigidbody.simulated = true;
+            _targetRigidbody.velocity = Vector2.zero;
         }
 
         private void SetupJumpInputAction()
@@ -35,6 +54,12 @@ namespace FlappyProject.Actions
        
             _settings.Jump.performed += context =>
             {
+                if (!gameStarted)
+                {
+                    gameStarted = true;
+                    EnablePhysics();
+                    return;
+                }
                 float jumpForce = moveData.JumpForce;
                 if (context.interaction is SlowTapInteraction)
                 {
@@ -92,6 +117,16 @@ namespace FlappyProject.Actions
         {
            
         }
-        
+
+        private void MoveObjectToPosition(GameObject objectToMove, Vector3 targetPosition, float speed, Action onCompleteCallback)
+        {
+            float distance = Vector3.Distance(objectToMove.transform.position, targetPosition);
+            float duration = distance / speed;
+
+            LeanTween.move(objectToMove, targetPosition, duration)
+                .setEase(LeanTweenType.easeInOutBack)
+                .setOnComplete(onCompleteCallback);
+        }
+
     }
 }
