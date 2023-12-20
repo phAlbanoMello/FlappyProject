@@ -10,15 +10,23 @@ public class View : MonoBehaviour
 
     private ViewComponent[] _viewComponents;
     protected bool IsEnabled = false;
+    private GameObject _canvasObject;
 
     public virtual void Initialize()
     {
+        InitCanvas();
         LoadViewComponents();
-        if (IsEnabledAtStart)
-        {
-            IsEnabled = true;
-            InitializeComponents();
-        }
+
+        if (!IsEnabledAtStart) { return; }
+
+        IsEnabled = true;
+        InitializeComponents();
+    }
+
+    private void InitCanvas()
+    {
+        _canvasObject = GetComponentInChildren<Canvas>().gameObject;
+        _canvasObject.SetActive(false);
     }
 
     private void InitializeComponents()
@@ -31,9 +39,8 @@ public class View : MonoBehaviour
 
     protected void LoadViewComponents()
     {
-        if (_viewComponents == null) {
-            _viewComponents = GetComponentsInChildren<ViewComponent>(true);
-        }
+        if (_viewComponents != null){return;}
+        _viewComponents = GetComponentsInChildren<ViewComponent>(true);
     }
 
     protected void HideAllComponents()
@@ -44,12 +51,8 @@ public class View : MonoBehaviour
             {
                 component.gameObject.SetActive(true);
             }
-            if (component.isAnimated)
-            {
-                component.AnimateOut();
-                return;
-            }
-            component.gameObject.SetActive(false);
+       
+            component.AnimateOut();
         }
     }
     protected void ShowAllComponents()
@@ -65,18 +68,12 @@ public class View : MonoBehaviour
 
     public void EnableView()
     {
-        if (IsEnabled == false)
-        {
-            ShowAllComponents();
-            IsEnabled = true;
-        }
+        ShowAllComponents();
+        IsEnabled = true;
     }
     public void DisableView()
     {
-        if (IsEnabled == true)
-        {
-            HideAllComponents();
-            IsEnabled = false;
-        }
+        HideAllComponents();
+        IsEnabled = false;
     }
 }

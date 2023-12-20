@@ -16,7 +16,7 @@ public class GameOverView : View
         EnableView();
     }
 
-    private void OnDisable()
+    private void Disable()
     {
         EventBus.Unsubscribe<PlayerDiedEvent>(HandlePlayerDied);
     }

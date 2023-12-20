@@ -975,9 +975,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animate: 1
-  _hideDirection: 1
-  _easeType: 1
-  _animationDuration: 1
+  _tweenData:
+    _targetPosition: {x: 0, y: 0}
+    _easeType: 0
+    _time: 0
+  _animationStyle: 0
 --- !u!114 &805863445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1358,10 +1360,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82bdba9241c0de7419220a2b72619aa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animate: 0
-  _hideDirection: 3
-  _easeType: 1
-  _animationDuration: 1
+  _animate: 1
+  _tweenData:
+    _targetPosition: {x: 0, y: 0}
+    _easeType: 0
+    _time: 0
+  _animationStyle: 0
 --- !u!1 &1035583549
 GameObject:
   m_ObjectHideFlags: 0
@@ -1726,7 +1730,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1519226108
 Transform:
   m_ObjectHideFlags: 0
@@ -1950,9 +1954,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animate: 1
-  _hideDirection: 1
-  _easeType: 1
-  _animationDuration: 1
+  _tweenData:
+    _targetPosition: {x: 0, y: 0}
+    _easeType: 0
+    _time: 0
+  _animationStyle: 0
 --- !u!1 &1609879542
 GameObject:
   m_ObjectHideFlags: 0
@@ -2166,6 +2172,7 @@ GameObject:
   - component: {fileID: 1763517917}
   - component: {fileID: 1763517920}
   - component: {fileID: 1763517919}
+  - component: {fileID: 1763517921}
   m_Layer: 5
   m_Name: SoulsCountBG
   m_TagString: Untagged
@@ -2245,9 +2252,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animate: 1
-  _hideDirection: 1
-  _easeType: 1
-  _animationDuration: 1
+  _tweenData:
+    _targetPosition: {x: 0, y: 0}
+    _easeType: 0
+    _time: 0
+  _animationStyle: 0
 --- !u!114 &1763517920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2274,6 +2283,22 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 1
+--- !u!114 &1763517921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1763517915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7124a78cdcc01f74b9043bb3edc193a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tweenData:
+    _targetPosition: {x: 0, y: 0}
+    _easeType: 0
+    _time: 0
 --- !u!1 &1826929176
 GameObject:
   m_ObjectHideFlags: 0
@@ -2422,9 +2447,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animate: 1
-  _hideDirection: 0
-  _easeType: 1
-  _animationDuration: 1
+  _tweenData:
+    _targetPosition: {x: 0, y: 0}
+    _easeType: 0
+    _time: 0
+  _animationStyle: 0
 --- !u!1 &1905557159
 GameObject:
   m_ObjectHideFlags: 0
