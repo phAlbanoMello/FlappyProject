@@ -3,6 +3,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using Unity.XR.OpenVR;
 using Unity.Loading;
+using UnityEngine.Video;
+using System;
 
 public class UIManager : MonoBehaviour, IManager
 {
@@ -17,17 +19,16 @@ public class UIManager : MonoBehaviour, IManager
     public void Init()
     {
        LoadViewsFromContainer();
-        HasInitiated = true;
+       InitializeViews();
+       EnableInitialViews();
+       HasInitiated = true;
     }
 
     public void Stop()
-    {
-       //Unsubscribe events
-    }
+    {}
 
     public void UpdateManager(float deltaTime)
-    {
-    }
+    {}
 
     public void LoadViewsFromContainer()
     {
@@ -38,11 +39,6 @@ public class UIManager : MonoBehaviour, IManager
         foreach (View view in viewsInContainer)
         {
             _loadedViews.Add(view);
-            if (view.IsEnabledAtStart){
-                view.gameObject.SetActive(true);
-                continue;
-            }
-            view.gameObject.SetActive(false);
         }
     }
 
@@ -110,6 +106,34 @@ public class UIManager : MonoBehaviour, IManager
             view.gameObject.SetActive(false);
         }
         _viewQueue.Clear();
+    }
+
+    private void HideAll()
+    {
+        foreach (View view in _loadedViews)
+        {
+            view.DisableView();
+        }    
+    }
+    private void EnableInitialViews()
+    {
+        foreach (View view in _loadedViews)
+        {
+            if (view.IsEnabledAtStart)
+            {
+                view.EnableView();
+                continue;
+            }
+            view.DisableView();
+        }
+    }
+
+    private void InitializeViews()
+    {
+        foreach(View view in _loadedViews)
+        {
+            view.Initialize();
+        }
     }
 }
 

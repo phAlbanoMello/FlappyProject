@@ -1,4 +1,5 @@
 using FlappyProject.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,7 +17,12 @@ namespace FlappyProject.Managers
 
         public void Init()
         {
+            EventBus.Subscribe<GameStartedEvent>(HandleGameStart);
             LoadSpawners();
+            
+        }
+        private void HandleGameStart(GameStartedEvent @event)
+        {
             StartSpawningRoutines();
             HasInitiated = true;
         }
@@ -43,6 +49,10 @@ namespace FlappyProject.Managers
         {
         }
 
- 
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<GameStartedEvent>(HandleGameStart);
+        }
+
     }
 }

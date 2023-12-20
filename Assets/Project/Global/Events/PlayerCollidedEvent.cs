@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class PlayerCollidedEvent
 {
-    public LayerMask CollisionMask;
+    public GameObject _collidingObject { get; private set; }
 
-    public PlayerCollidedEvent(LayerMask collisionMask)
+    public PlayerCollidedEvent(GameObject collidedObject)
     {
-        CollisionMask = collisionMask;
+        _collidingObject = collidedObject;
     }
 }
