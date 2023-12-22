@@ -17,7 +17,7 @@ public class TextColorFading : MonoBehaviour, ITweenAnimation
         _textMeshObject = GetComponent<TextMeshProUGUI>();
     }
 
-    public void Animate()
+    public void AnimateLoop()
     { 
         StartColorFadingLoop();
     }

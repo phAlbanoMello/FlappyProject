@@ -2,18 +2,17 @@ using FlappyProject.Interfaces;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem.Interactions;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace FlappyProject.Actions
 {
     public class PlayerController : IActor
     {
         private PlayerSettings _settings;
-
-        private CollisionDetection _playerCollision;
         private Rigidbody2D _targetRigidbody;
-        private Action _playerDiedEvent;
 
-        private bool gameStarted = false;
+        private bool _gameStarted = false;
+        private Vector2 _preStartPosition;
 
         public PlayerController(PlayerSettings data)
         {
@@ -23,21 +22,41 @@ namespace FlappyProject.Actions
         public void Initialize()
         {
             if (_settings.PlayerGameObject == null) { Debug.LogError("Target Actor was not set at the PlayerManager."); return; }
+            GetRigidbody();
+            SetPreStartPosition();
 
+            SubscribeEvents();
+
+            MovePlayerToGameStartPosition();
+        }
+
+        private void SetPreStartPosition()
+        {
+            Collider2D playerCollider = _settings.PlayerGameObject.GetComponent<Collider2D>();
+            float offScreenX = -Camera.main.orthographicSize * Camera.main.aspect - playerCollider.bounds.extents.x;
+            Vector2 initialPosition = new Vector2(offScreenX, 0);
+
+            _targetRigidbody.simulated = false;
+            _settings.PlayerGameObject.transform.position = initialPosition;
+        }
+
+        private void MovePlayerToGameStartPosition()
+        {
+            MoveObjectToPosition(_settings.PlayerGameObject,Vector2.zero, 2f, EnableMovement);
+        }
+
+        private void SubscribeEvents()
+        {
             EventBus.Subscribe<PlayerDiedEvent>(HandleDeath);
-            _targetRigidbody = _settings.PlayerGameObject.GetComponent<Rigidbody2D>();
+        }
 
-            MoveObjectToPosition(
-                _settings.PlayerGameObject,
-                Vector2.zero, 2f,
-                EnableMovement
-            );
+        private void GetRigidbody()
+        {
+            _targetRigidbody = _settings.PlayerGameObject.GetComponent<Rigidbody2D>();
         }
 
         private void EnableMovement()
         {
-            //TODO:Countdown before starting
-            //Synchronize with obstacles
             EnableActions();
             SetupJumpInputAction();
         }
@@ -46,6 +65,8 @@ namespace FlappyProject.Actions
         {
             _targetRigidbody.simulated = true;
             _targetRigidbody.velocity = Vector2.zero;
+
+            EventBus.Publish(new PlayerStartedMovingEvent());
         }
 
         private void SetupJumpInputAction()
@@ -54,9 +75,9 @@ namespace FlappyProject.Actions
        
             _settings.Jump.performed += context =>
             {
-                if (!gameStarted)
+                if (!_gameStarted)
                 {
-                    gameStarted = true;
+                    _gameStarted = true;
                     EnablePhysics();
                     return;
                 }
@@ -118,14 +139,14 @@ namespace FlappyProject.Actions
            
         }
 
-        private void MoveObjectToPosition(GameObject objectToMove, Vector3 targetPosition, float speed, Action onCompleteCallback)
+        private void MoveObjectToPosition(GameObject objectToMove, Vector3 targetPosition, float speed, Action onCompleteCallback = null)
         {
             float distance = Vector3.Distance(objectToMove.transform.position, targetPosition);
             float duration = distance / speed;
 
             LeanTween.move(objectToMove, targetPosition, duration)
                 .setEase(LeanTweenType.easeInOutBack)
-                .setOnComplete(onCompleteCallback);
+                .setOnComplete(()=> { onCompleteCallback?.Invoke(); });
         }
 
     }

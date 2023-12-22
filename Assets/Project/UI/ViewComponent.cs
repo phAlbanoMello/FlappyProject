@@ -15,16 +15,18 @@ public class ViewComponent : MonoBehaviour
     
     public bool isAnimated { get { return _animate; }}
 
+    public ITweenAnimation TweenAnimation { get => _tweenAnimation; }
+
     public void Initialize()
     {
         StoreOriginalPosition();
-        //TODO: Create TweenAnimation here?
+
         _tweenAnimation = GetComponent<ITweenAnimation>();
 
-        if (_tweenAnimation != null)
+        if (TweenAnimation != null)
         {
-            _tweenAnimation.Initialize();
-            _tweenAnimation.Animate();
+            TweenAnimation.Initialize();
+            TweenAnimation.AnimateLoop();
         }
     }
 
@@ -35,77 +37,12 @@ public class ViewComponent : MonoBehaviour
 
     public void Show()
     {
-        switch (_animationStyle)
-        {
-            case AnimationStyle.Fade:
-
-                break;
-            case AnimationStyle.Slide:
-                break;
-        }
+     
     }
     public void Hide()
     {
 
     }
-
-    public void AnimateOut()
-    {
-        //RectTransform rectTransform = GetComponent<RectTransform>();
-        //Vector2 direction = GetDirectionVector(_hideDirection);
-        //Vector2 targetPosition = (Vector2)rectTransform.localPosition + direction * GetScreenDimension();
-
-        //LeanTween.move(rectTransform, targetPosition, _animationDuration)
-        //    .setEase(_easeType)
-        //    .setOnComplete(() => {
-        //        if(_tweenAnimation != null)
-        //            _tweenAnimation.StopAnimation(); 
-        //    });
-    }
-
-    public void AnimateIn(Action onCompleteCallback)
-    {
-        //onCompleteCallback += () => {
-        //    if(_tweenAnimation != null)
-        //    _tweenAnimation.Animate(); 
-        //};
-
-        //RectTransform rectTransform = GetComponent<RectTransform>();
-
-        //LeanTween.move(rectTransform, _originalPosition, _animationDuration)
-        //    .setEase(_easeType)
-        //    .setOnComplete(onCompleteCallback);
-    }
-
-    //private Vector2 GetDirectionVector(AnimationDirection direction)
-    //{
-    //    switch (direction)
-    //    {
-    //        case AnimationDirection.Up:
-    //            return Vector2.up;
-    //        case AnimationDirection.Down:
-    //            return Vector2.down;
-    //        case AnimationDirection.Left:
-    //            return Vector2.left;
-    //        case AnimationDirection.Right:
-    //            return Vector2.right;
-    //        default:
-    //            return Vector2.zero;
-    //    }
-    //}
-
-    //float GetScreenDimension()
-    //{
-    //    if (_hideDirection == AnimationDirection.Up || _hideDirection == AnimationDirection.Down)
-    //    {
-    //        return Screen.height;
-    //    }
-    //    else
-    //    {
-    //        return Screen.width;
-    //    }
-    //}
-
 
     public enum AnimationStyle
     {

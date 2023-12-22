@@ -1,16 +1,16 @@
 using System;
 using UnityEngine;
 
-public class Obstacle : MonoBehaviour
+public class MovingObject : MonoBehaviour
 {
     protected bool IsActivated;
     protected Vector2 StartPosition;
 
     private Action _move;
 
-    public ObstacleData ObstacleData { get; private set; }
+    public SpawnableObjectData ObstacleData { get; private set; }
 
-    public virtual void Init(ObstacleData data)
+    public virtual void Init(SpawnableObjectData data)
     {
         ObstacleData = data;
         StartPosition = transform.position;
@@ -45,6 +45,18 @@ public class Obstacle : MonoBehaviour
         _move = moveAction;
     }
 
+    protected void SetSpawnDelay(int delay)
+    {
+        Range delayRange = new Range(delay, delay);
+
+        ObstacleData = new SpawnableObjectData(
+            ObstacleData.Speed,
+            ObstacleData.MovementRange,
+            ObstacleData.YPositionOffset,
+            delayRange
+            );
+    }
+
     protected Vector3 GetNewStartPosition()
     {
         float spawnLimit = transform.localScale.y / 2;
@@ -52,7 +64,7 @@ public class Obstacle : MonoBehaviour
         return new Vector3(StartPosition.x, StartPosition.y + yPosOffset, 0);
     }
 
-    protected float GetNewDelay()
+    protected virtual float GetNewDelay()
     {
         return UnityEngine.Random.Range(ObstacleData.DelayRange.Min, ObstacleData.DelayRange.Max);
     }

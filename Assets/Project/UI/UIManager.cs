@@ -5,6 +5,7 @@ using Unity.XR.OpenVR;
 using Unity.Loading;
 using UnityEngine.Video;
 using System;
+using JetBrains.Annotations;
 
 public class UIManager : MonoBehaviour, IManager
 {
@@ -18,17 +19,18 @@ public class UIManager : MonoBehaviour, IManager
 
     public void Init()
     {
-       LoadViewsFromContainer();
-       InitializeViews();
-       EnableInitialViews();
-       HasInitiated = true;
+        LoadViewsFromContainer();
+
+        InitializeViews();
+
+        HasInitiated = true;
     }
 
     public void Stop()
-    {}
+    { }
 
     public void UpdateManager(float deltaTime)
-    {}
+    { }
 
     public void LoadViewsFromContainer()
     {
@@ -42,6 +44,21 @@ public class UIManager : MonoBehaviour, IManager
         }
     }
 
+    private void HideAll()
+    {
+        foreach (View view in _loadedViews)
+        {
+            view.DisableView();
+        }
+    }
+
+    private void InitializeViews()
+    {
+        foreach (View view in _loadedViews)
+        {
+            view.Initialize();
+        }
+    }
     public void PushView(View view)
     {
         if (view != null)
@@ -78,7 +95,7 @@ public class UIManager : MonoBehaviour, IManager
     public void EnqueueView(View view)
     {
         if (view != null)
-        { 
+        {
             _viewQueue.Enqueue(view);
         }
     }
@@ -108,32 +125,5 @@ public class UIManager : MonoBehaviour, IManager
         _viewQueue.Clear();
     }
 
-    private void HideAll()
-    {
-        foreach (View view in _loadedViews)
-        {
-            view.DisableView();
-        }    
-    }
-    private void EnableInitialViews()
-    {
-        foreach (View view in _loadedViews)
-        {
-            if (view.IsEnabledAtStart)
-            {
-                view.EnableView();
-                continue;
-            }
-            view.DisableView();
-        }
-    }
-
-    private void InitializeViews()
-    {
-        foreach(View view in _loadedViews)
-        {
-            view.Initialize();
-        }
-    }
 }
 

@@ -22,6 +22,7 @@ namespace FlappyProject.Managers
         {
             EventBus.Subscribe<GameStartedEvent>(HandleGameStarted);
             EventBus.Subscribe<PlayerCollidedEvent>(HandlePlayerDamaged);
+           
             _scoreData = new ScoreData();
         }
 
@@ -33,10 +34,16 @@ namespace FlappyProject.Managers
 
         private void HandlePlayerDamaged(PlayerCollidedEvent playerCollidedEvent)
         {
-            int resultScore = _scoreData.CurrentScore - _scorePenalty;
+            ScoreModifier scoreModifier = playerCollidedEvent._collidingObject.GetComponent<ScoreModifier>();
+
+            if (scoreModifier == null){
+                return;
+            }
+            
+            int resultScore = _scoreData.CurrentScore + scoreModifier.ScoreValue;
             if (resultScore > 0)
             {
-                RemoveScore(_scorePenalty);
+                AddScore(scoreModifier.ScoreValue);
             }
             else if (_scoringRunning)
             {
@@ -44,7 +51,7 @@ namespace FlappyProject.Managers
                 Stop();
                 SaveScore();
                 ResetScore();
-                EventBus.Publish(new PlayerDiedEvent());
+                EventBus.Publish(new PlayerDiedEvent(_scoreData.PreviousScore));
                 Debug.Log("Player Died");
             }
         }
@@ -78,12 +85,7 @@ namespace FlappyProject.Managers
             _scoreData.CurrentScore += scoreToAdd;
             UpdateScoreText();
         }
-        public void RemoveScore(int scoreToRemove)
-        {
-            _scoreData.CurrentScore -= scoreToRemove;
-            UpdateScoreText();
-        }
-
+      
         private void UpdateScoreText()
         {
             EventBus.Publish(new ScoreChangedEvent(_scoreData.CurrentScore));
@@ -97,6 +99,7 @@ namespace FlappyProject.Managers
         public void SaveScore()
         {
             _scoreData.PreviousScore = _scoreData.CurrentScore;
+            //TODO: Send PreviousScore to SoulRecovery somehow
         }
 
         private IEnumerator StartScoring()

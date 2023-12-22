@@ -3,21 +3,38 @@ using System;
 
 public class GameOverView : View
 {
-    public bool Enabled { get { return IsEnabled; } private set { } }
+    private GameOverViewController _viewController;
+
     public override void Initialize()
-    { 
+    {
         base.Initialize();
+
+        InitViewController();
+        SubscribeEvents();
+    }
+
+    private void SubscribeEvents()
+    {
         EventBus.Subscribe<PlayerDiedEvent>(HandlePlayerDied);
-        IsEnabled = gameObject.activeSelf;
+        EventBus.Subscribe<RestartGameEvent>(HandleGameRestarted);
+    }
+
+    private void InitViewController()
+    {
+        _viewController = GetComponent<GameOverViewController>();
+        _viewController.Init();
+    }
+
+    private void HandleGameRestarted(RestartGameEvent @event)
+    {
+        DisableView();
+        EventBus.Unsubscribe<RestartGameEvent>(HandleGameRestarted);
     }
 
     private void HandlePlayerDied(PlayerDiedEvent @event)
     {
         EnableView();
-    }
-
-    private void Disable()
-    {
+        EventBus.Publish(new ReadyToTryAgainEvent());
         EventBus.Unsubscribe<PlayerDiedEvent>(HandlePlayerDied);
     }
 }

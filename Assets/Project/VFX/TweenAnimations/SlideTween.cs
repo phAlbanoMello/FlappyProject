@@ -1,36 +1,80 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
+public enum SlideDirection
+{
+    Up,
+    Down,
+    Left,
+    Right
+}
 
 public class SlideTween : MonoBehaviour, ITweenAnimation
 {
-    private TweenData _tweenData;
-    private GameObject _tweenTarget;
-    private Action _onCompleteCallback;
+    [SerializeField] private LeanTweenType _easeType = LeanTweenType.easeOutQuad;
+    [SerializeField] private float _duration = 1f;
+    [SerializeField] private SlideDirection _direction = SlideDirection.Right;
 
-    private LTDescr _tweenDescr;
+    private RectTransform _rectTransform;
 
-    public SlideTween(TweenData tweenData, GameObject tweenTarget, Action onCompleteCallback)
+    private void Awake()
     {
-        _tweenData = tweenData;
-        this._tweenTarget = tweenTarget;
-        _onCompleteCallback = onCompleteCallback;
+        _rectTransform = GetComponent<RectTransform>();
     }
 
-    public void Animate()
+    public void AnimateIn(Action onCompleteCallback = null)
     {
-        //RectTransform rectTransform = tweenTarget.GetComponent<RectTransform>();
+        Vector3 startPos = GetStartPosition();
+        Vector3 endPos = _rectTransform.anchoredPosition;
 
-        _tweenDescr = LeanTween.move(_tweenTarget, _tweenData.TargetPosition, _tweenData.Time)
-            .setEase(_tweenData.EaseType)
-            .setOnComplete(() => { _onCompleteCallback?.Invoke(); });
+        _rectTransform.anchoredPosition = startPos;
+
+        LeanTween.move(_rectTransform, endPos, _duration)
+            .setEase(_easeType)
+            .setOnComplete(() => { onCompleteCallback?.Invoke(); });
     }
 
-    public void StopAnimation()
+    public void AnimateOut(Action onCompleteCallback = null)
     {
+        Vector3 startPos = _rectTransform.anchoredPosition;
+        Vector3 endPos = GetEndPosition();
 
-        _tweenDescr.updateNow();
+        LeanTween.move(_rectTransform, endPos, _duration)
+            .setEase(_easeType)
+            .setOnComplete(() => { onCompleteCallback?.Invoke(); });
     }
 
+    private Vector3 GetStartPosition()
+    {
+        switch (_direction)
+        {
+            case SlideDirection.Up:
+                return new Vector3(_rectTransform.anchoredPosition.x, -_rectTransform.rect.height, 0f);
+            case SlideDirection.Down:
+                return new Vector3(_rectTransform.anchoredPosition.x, _rectTransform.rect.height, 0f);
+            case SlideDirection.Left:
+                return new Vector3(_rectTransform.rect.width, _rectTransform.anchoredPosition.y, 0f);
+            case SlideDirection.Right:
+                return new Vector3(-_rectTransform.rect.width, _rectTransform.anchoredPosition.y, 0f);
+            default:
+                return Vector3.zero;
+        }
+    }
+
+    private Vector3 GetEndPosition()
+    {
+        switch (_direction)
+        {
+            case SlideDirection.Up:
+                return new Vector3(_rectTransform.anchoredPosition.x, -_rectTransform.rect.height, 0f);
+            case SlideDirection.Down:
+                return new Vector3(_rectTransform.anchoredPosition.x, _rectTransform.rect.height, 0f);
+            case SlideDirection.Left:
+                return new Vector3(_rectTransform.rect.width, _rectTransform.anchoredPosition.y, 0f);
+            case SlideDirection.Right:
+                return new Vector3(-_rectTransform.rect.width, _rectTransform.anchoredPosition.y, 0f);
+            default:
+                return Vector3.zero;
+        }
+    }
 }

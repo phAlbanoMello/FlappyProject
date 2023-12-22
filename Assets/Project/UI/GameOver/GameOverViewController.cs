@@ -6,24 +6,38 @@ using UnityEngine.InputSystem;
 public class GameOverViewController : ViewController
 {
     [SerializeField] private InputAction _tryAgain;
-    private GameOverView _gameOverView;
 
+    private bool _restartActionEnabled = false;
 
-    private void OnEnable()
+    internal void Init()
     {
-        _gameOverView = GetComponent<GameOverView>();
-        _tryAgain.Enable();
-
-        _tryAgain.performed += context =>
-        {
-            if (_gameOverView.Enabled)
-            {
-                EventBus.Publish(new RestartGameEvent());
-            }
-        };
+        EventBus.Subscribe<ReadyToTryAgainEvent>(EnableRestartAction);
     }
-    private void OnDisable()
+
+    internal void DisableTryAgainAction()
     {
-        _tryAgain.Disable();
+        if (_restartActionEnabled)
+        {
+            _tryAgain.Disable();
+            _tryAgain.performed -= OnTryAgainPerformed;
+            _restartActionEnabled = false;
+            EventBus.Unsubscribe<ReadyToTryAgainEvent>(EnableRestartAction);
+        }
+    }
+
+    private void EnableRestartAction(ReadyToTryAgainEvent @event)
+    {
+        if (!_restartActionEnabled)
+        {
+            _tryAgain.Enable();
+            _tryAgain.performed += OnTryAgainPerformed;
+            _restartActionEnabled = true;
+        }
+    }
+
+    private void OnTryAgainPerformed(InputAction.CallbackContext context)
+    {
+        EventBus.Publish(new RestartGameEvent());
+        DisableTryAgainAction();
     }
 }

@@ -10,60 +10,55 @@ public class View : MonoBehaviour
 
     private ViewComponent[] _viewComponents;
     protected bool IsEnabled = false;
-    private GameObject _canvasObject;
-
+ 
     public virtual void Initialize()
     {
-        InitCanvas();
         LoadViewComponents();
+        DisableView();
 
         if (!IsEnabledAtStart) { return; }
 
-        IsEnabled = true;
-        InitializeComponents();
-    }
-
-    private void InitCanvas()
-    {
-        _canvasObject = GetComponentInChildren<Canvas>().gameObject;
-        _canvasObject.SetActive(false);
-    }
-
-    private void InitializeComponents()
-    {
-        foreach (ViewComponent viewComponent in _viewComponents)
-        {
-            viewComponent.Initialize();
-        }
+        EnableView();
     }
 
     protected void LoadViewComponents()
     {
         if (_viewComponents != null){return;}
         _viewComponents = GetComponentsInChildren<ViewComponent>(true);
+        _viewComponents.Initialize();
     }
 
     protected void HideAllComponents()
     {
         foreach (ViewComponent component in _viewComponents)
         {
-            if (component.isActiveAndEnabled == false)
+            ITweenAnimation animation = component.TweenAnimation;
+            if (animation != null)
             {
-                component.gameObject.SetActive(true);
+                animation.AnimateOut();
             }
-       
-            component.AnimateOut();
         }
+        ToggleCanvasVisibility(false);
     }
+
+
     protected void ShowAllComponents()
     {
+        ToggleCanvasVisibility(true);
         foreach (ViewComponent component in _viewComponents)
         {
-            if (component.isAnimated)
+            ITweenAnimation animation = component.TweenAnimation;
+            if (animation != null)
             {
-                component.AnimateIn(() => { });
+                animation.AnimateIn();
             }
         }
+    }
+    private void ToggleCanvasVisibility(bool visible)
+    {
+        CanvasGroup canvasGroup = gameObject.GetComponentInChildren<CanvasGroup>();
+        int targetAlpha = visible? 1 : 0;
+        canvasGroup.LeanAlpha(targetAlpha, 0.15f);
     }
 
     public void EnableView()

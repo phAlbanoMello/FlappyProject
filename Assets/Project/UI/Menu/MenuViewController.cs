@@ -8,7 +8,17 @@ public class MenuViewController : ViewController
 {
     [SerializeField] private InputAction _gameStart;
     
-    private void OnEnable()
+    internal void DisableStartAction()
+    {
+        _gameStart.Disable();
+    }
+
+    internal void Init()
+    {
+        EventBus.Subscribe<ReadyToStartEvent>(EnableStartAction);
+    }
+
+    private void EnableStartAction(ReadyToStartEvent @event)
     {
         _gameStart.Enable();
 
@@ -16,9 +26,7 @@ public class MenuViewController : ViewController
         {
             EventBus.Publish(new GameStartedEvent());
         };
-    }
-    private void OnDisable()
-    {
-        _gameStart.Disable();
+
+        EventBus.Unsubscribe<ReadyToStartEvent>(EnableStartAction);
     }
 }

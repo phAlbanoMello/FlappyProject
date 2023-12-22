@@ -1,5 +1,9 @@
 
 public class PlayerDiedEvent
 {
-    public PlayerDiedEvent(){}
+    public int Souls { get; private set; }
+   
+    public PlayerDiedEvent(int previousSoulsBeforeDeath){
+        Souls = previousSoulsBeforeDeath;
+    }
 }

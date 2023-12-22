@@ -2,6 +2,7 @@ using UnityEngine;
 using FlappyProject.Interfaces;
 using FlappyProject.Managers;
 using System.Collections.Generic;
+using System;
 
 [System.Serializable]
 public class SystemManager : MonoBehaviour
@@ -12,10 +13,16 @@ public class SystemManager : MonoBehaviour
 
     void OnEnable()
     {
+        EventBus.Subscribe<RestartGameEvent>(HandleGameRestart);
         LoadManagersFromChildren();
 
         _playerManager = GetManagerOfType<PlayerManager>();
         
+        InitializeManagers();
+    }
+
+    private void HandleGameRestart(RestartGameEvent @event)
+    {
         InitializeManagers();
     }
 
@@ -28,6 +35,7 @@ public class SystemManager : MonoBehaviour
                 manager.Init();
             }
         }
+        EventBus.Publish(new ReadyToStartEvent());
     }
 
     private void LoadManagersFromChildren()

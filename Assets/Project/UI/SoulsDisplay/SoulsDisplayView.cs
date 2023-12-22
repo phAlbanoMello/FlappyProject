@@ -8,6 +8,7 @@ public class SoulsDisplayView : View
 {
     private TextMeshProUGUI _soulsText;
 
+    [Header("Text Animation")]
     [SerializeField] private float _animationDuration = 1f;
     [SerializeField] private float _jumpScale = 1.2f;
     private int _currentValue;
@@ -15,9 +16,27 @@ public class SoulsDisplayView : View
     public override void Initialize()
     {
         base.Initialize();
-        _soulsText = GetComponentInChildren<TextMeshProUGUI>();
 
+        GetTextMeshObject();
+
+        SubscribeEvents();
+    }
+
+    private void SubscribeEvents()
+    {
         EventBus.Subscribe<ScoreChangedEvent>(HandleScoreChanged);
+        EventBus.Subscribe<PlayerDiedEvent>(HandleGameOver);
+    }
+
+    private void HandleGameOver(PlayerDiedEvent @event)
+    {
+        EventBus.Unsubscribe<ScoreChangedEvent>(HandleScoreChanged);
+        EventBus.Unsubscribe<PlayerDiedEvent>(HandleGameOver);
+    }
+
+    private void GetTextMeshObject()
+    {
+        _soulsText = GetComponentInChildren<TextMeshProUGUI>();
     }
 
     private void HandleScoreChanged(ScoreChangedEvent scoreChangedEvent)

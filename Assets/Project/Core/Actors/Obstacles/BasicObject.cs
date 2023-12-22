@@ -1,9 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
-public class Wall : Obstacle
+public class BasicObject : MovingObject
 {
-    public override void Init(ObstacleData data)
+    public override void Init(SpawnableObjectData data)
     {
         base.Init(data);
         SetMovementCallback(OnMoveActionCalled);
@@ -14,6 +14,11 @@ public class Wall : Obstacle
         base.Move();
     }
 
+    public void CancelMovement()
+    {
+        StopCoroutine(MoveDelayed());
+    }
+    
     private void OnMoveActionCalled()
     {
         StartCoroutine(MoveDelayed());
@@ -22,10 +27,11 @@ public class Wall : Obstacle
     private IEnumerator MoveDelayed()
     {
         yield return new WaitForSeconds(GetNewDelay());
+        ResetFX();
         BasicMovement(this, Vector3.left, ObstacleData.Speed, ObstacleData.MovementRange);
     }
 
-    private void BasicMovement(Obstacle obstacle, Vector3 moveDirection, float speed, float distance)
+    private void BasicMovement(MovingObject obstacle, Vector3 moveDirection, float speed, float distance)
     {
         float timeToReachDestination = distance / speed;
 
@@ -38,5 +44,10 @@ public class Wall : Obstacle
                     OnMoveActionCalled();
                 }
             });
+    }
+
+    protected virtual void ResetFX()
+    {
+        
     }
 }

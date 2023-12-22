@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ground
   - Obstacle
+  - BasicSoul
+  - SoulRecovery
   layers:
   - Default
   - TransparentFX

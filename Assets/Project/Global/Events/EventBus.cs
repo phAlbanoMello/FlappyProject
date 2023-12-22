@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 public static class EventBus
 {
-    private static Dictionary<Type, List<Action<object>>> _eventHandlers;
+    private static Dictionary<Type, List<Delegate>> _eventHandlers;
 
     static EventBus()
     {
-        _eventHandlers = new Dictionary<Type, List<Action<object>>>();
+        _eventHandlers = new Dictionary<Type, List<Delegate>>();
     }
 
     public static void Subscribe<T>(Action<T> handler)
@@ -16,11 +16,10 @@ public static class EventBus
 
         if (!_eventHandlers.ContainsKey(eventType))
         {
-            _eventHandlers[eventType] = new List<Action<object>>();
+            _eventHandlers[eventType] = new List<Delegate>();
         }
 
-        Action<object> wrappedHandler = (param) => handler((T)param);
-        _eventHandlers[eventType].Add(wrappedHandler);
+        _eventHandlers[eventType].Add(handler);
     }
 
     public static void Unsubscribe<T>(Action<T> handler)
@@ -29,8 +28,7 @@ public static class EventBus
 
         if (_eventHandlers.ContainsKey(eventType))
         {
-            Action<object> wrappedHandler = (param) => handler((T)param);
-            _eventHandlers[eventType].Remove(wrappedHandler);
+            _eventHandlers[eventType].Remove(handler);
         }
     }
 
@@ -40,10 +38,67 @@ public static class EventBus
 
         if (_eventHandlers.ContainsKey(eventType))
         {
-            foreach (var handler in _eventHandlers[eventType])
+            List<Delegate> currentHandlers = new List<Delegate>(_eventHandlers[eventType]);
+
+            foreach (var handler in currentHandlers)
             {
-                handler.Invoke(eventData);
+                if (handler is Action<T>)
+                {
+                    ((Action<T>)handler).Invoke(eventData);
+                }
             }
         }
     }
 }
+
+
+
+//using System;
+//using System.Collections.Generic;
+
+//public static class EventBus
+//{
+//    private static Dictionary<Type, List<Action<object>>> _eventHandlers;
+
+//    static EventBus()
+//    {
+//        _eventHandlers = new Dictionary<Type, List<Action<object>>>();
+//    }
+
+//    public static void Subscribe<T>(Action<T> handler)
+//    {
+//        Type eventType = typeof(T);
+
+//        if (!_eventHandlers.ContainsKey(eventType))
+//        {
+//            _eventHandlers[eventType] = new List<Action<object>>();
+//        }
+
+//        Action<object> wrappedHandler = (param) => handler((T)param);
+//        _eventHandlers[eventType].Add(wrappedHandler);
+//    }
+
+//    public static void Unsubscribe<T>(Action<T> handler)
+//    {
+//        Type eventType = typeof(T);
+
+//        if (_eventHandlers.ContainsKey(eventType))
+//        {
+//            Action<object> wrappedHandler = (param) => handler((T)param);
+//            _eventHandlers[eventType].Remove(wrappedHandler);
+//        }
+//    }
+
+//    public static void Publish<T>(T eventData)
+//    {
+//        Type eventType = typeof(T);
+
+//        if (_eventHandlers.ContainsKey(eventType))
+//        {
+//            foreach (var handler in _eventHandlers[eventType])
+//            {
+//                handler.Invoke(eventData);
+//            }
+//        }
+//    }
+//}
