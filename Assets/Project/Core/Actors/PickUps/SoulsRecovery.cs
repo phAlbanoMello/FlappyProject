@@ -28,4 +28,11 @@ public class SoulsRecovery : PickUp
         TimeSpan timePassed = DateTime.Now - eventDateTime;
         return (int)timePassed.TotalSeconds;
     }
+    protected override void DisablePickUp()
+    {
+        base.DisablePickUp();
+        CancelMovement();
+        _isEnabled = false;
+    }
+
 }

@@ -10,6 +10,7 @@ public class ObjectSpawner : MonoBehaviour, ISpawner
     
     public virtual void StartSpawning()
     {
+        StopSpawning();
         CreateObject();
     }
 

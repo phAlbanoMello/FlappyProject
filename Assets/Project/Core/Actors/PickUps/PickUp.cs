@@ -38,7 +38,7 @@ public class PickUp : BasicObject
         }
     }
 
-    private void DisablePickUp()
+    protected virtual void DisablePickUp()
     {
         if (!_isDisabled && _particleSystems.Count > 0)
         {

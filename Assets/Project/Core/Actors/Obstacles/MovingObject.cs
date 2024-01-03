@@ -35,6 +35,11 @@ public class MovingObject : MonoBehaviour
         }
     }
 
+    protected void ResetPosition()
+    {
+        transform.position = StartPosition;
+    }
+
     public virtual void Destroy()
     {
         Destroy(gameObject);

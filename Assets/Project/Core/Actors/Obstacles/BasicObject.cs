@@ -17,6 +17,8 @@ public class BasicObject : MovingObject
     public void CancelMovement()
     {
         StopCoroutine(MoveDelayed());
+        IsActivated = false;
+        ResetPosition();
     }
     
     private void OnMoveActionCalled()
