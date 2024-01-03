@@ -41,6 +41,7 @@ public class SoulRecoverySpawner : MonoBehaviour
         {
             _soulsRecovery._isEnabled = false;
             _soulsRecovery.CancelMovement();
+            UnsubscribeEvents();
             return;
         }
         _soulsRecovery.SetScore(@event.Souls);

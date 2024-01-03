@@ -2,7 +2,6 @@ using FlappyProject.Interfaces;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem.Interactions;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace FlappyProject.Actions
 {

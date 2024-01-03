@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class SoulsDisplayView : View
 {
-    private TextMeshProUGUI _soulsText;
+    [SerializeField] private TextMeshProUGUI _soulsText;
+    [SerializeField] private TextMeshProUGUI _highestScoreText;
 
     [Header("Text Animation")]
     [SerializeField] private float _animationDuration = 1f;
@@ -17,8 +18,6 @@ public class SoulsDisplayView : View
     {
         base.Initialize();
 
-        GetTextMeshObject();
-
         SubscribeEvents();
     }
 
@@ -26,6 +25,12 @@ public class SoulsDisplayView : View
     {
         EventBus.Subscribe<ScoreChangedEvent>(HandleScoreChanged);
         EventBus.Subscribe<PlayerDiedEvent>(HandleGameOver);
+        EventBus.Subscribe<NewHighestScoreEvent>(HandleNewHighestScore);
+    }
+
+    private void HandleNewHighestScore(NewHighestScoreEvent score)
+    {
+        UpdateTextValue(_highestScoreText, score.Score);
     }
 
     private void HandleGameOver(PlayerDiedEvent @event)
@@ -34,39 +39,34 @@ public class SoulsDisplayView : View
         EventBus.Unsubscribe<PlayerDiedEvent>(HandleGameOver);
     }
 
-    private void GetTextMeshObject()
-    {
-        _soulsText = GetComponentInChildren<TextMeshProUGUI>();
-    }
-
     private void HandleScoreChanged(ScoreChangedEvent scoreChangedEvent)
     {
         _currentValue = int.Parse(_soulsText.text);
-        UpdateTextValue(scoreChangedEvent.Score);
+        UpdateTextValue(_soulsText, scoreChangedEvent.Score);
     }
 
-    public void UpdateTextValue(int newValue)
+    public void UpdateTextValue(TextMeshProUGUI textComponent, int newValue)
     {
-        _currentValue = int.Parse(_soulsText.text);
+        _currentValue = int.Parse(textComponent.text);
         LeanTween.value(gameObject, _currentValue, newValue, _animationDuration)
             .setOnUpdate((float val) =>
-            { 
-                _soulsText.text = Mathf.RoundToInt(val).ToString();
+            {
+                textComponent.text = Mathf.RoundToInt(val).ToString();
             })
             .setEase(LeanTweenType.easeInOutQuad)
             .setOnComplete(() =>
             {
                 _currentValue = newValue;
-                ApplyJumpEffect();
+                ApplyJumpEffect(textComponent.gameObject);
             });
     }
-    private void ApplyJumpEffect()
+    private void ApplyJumpEffect(GameObject componentGameObject)
     {
-        LeanTween.scale(_soulsText.gameObject, Vector3.one * _jumpScale, 0.1f)
+        LeanTween.scale(componentGameObject, Vector3.one * _jumpScale, 0.1f)
             .setEase(LeanTweenType.easeOutQuad)
             .setOnComplete(() =>
             {
-                LeanTween.scale(_soulsText.gameObject, Vector3.one, 0.1f)
+                LeanTween.scale(componentGameObject, Vector3.one, 0.1f)
                     .setEase(LeanTweenType.easeInQuad);
             });
     }

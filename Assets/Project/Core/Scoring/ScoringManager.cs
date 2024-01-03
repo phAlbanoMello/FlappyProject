@@ -17,7 +17,7 @@ namespace FlappyProject.Managers
 
         private Coroutine _scoring;
         private bool _scoringRunning;
-
+        
         public void Init()
         {
             EventBus.Subscribe<GameStartedEvent>(HandleGameStarted);
@@ -52,7 +52,6 @@ namespace FlappyProject.Managers
                 SaveScore();
                 ResetScore();
                 EventBus.Publish(new PlayerDiedEvent(_scoreData.PreviousScore));
-                Debug.Log("Player Died");
             }
         }
         private void LoadLastScore(ScoreData scoreData)
@@ -99,7 +98,11 @@ namespace FlappyProject.Managers
         public void SaveScore()
         {
             _scoreData.PreviousScore = _scoreData.CurrentScore;
-            //TODO: Send PreviousScore to SoulRecovery somehow
+            if (_scoreData.PreviousScore > _scoreData.HighestScore)
+            {
+                _scoreData.HighestScore = _scoreData.CurrentScore;
+                EventBus.Publish(new NewHighestScoreEvent(_scoreData.HighestScore));
+            }
         }
 
         private IEnumerator StartScoring()
